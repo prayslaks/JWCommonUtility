@@ -1,0 +1,93 @@
+// Copyright (c) 2026 Prayslaks. All rights reserved. Unauthorized copying, modification, or distribution of this file, via any medium is strictly prohibited. Proprietary and confidential.
+
+#pragma once
+
+#include "Modules/ModuleManager.h"
+#include "HAL/IConsoleManager.h"
+
+class FJWCommonUtilityModule : public IModuleInterface
+{
+public:
+
+	/** IModuleInterface implementation */
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+};
+
+// 디버깅 로그 카테고리 선언
+JWCOMMONUTILITY_API DECLARE_LOG_CATEGORY_EXTERN(JWCULog, Log, All);
+JWCOMMONUTILITY_API DECLARE_LOG_CATEGORY_EXTERN(JWCULogWall, Log, All);
+
+/**
+ * 현재 함수와 라인 정보를 문자열로 변환하는 매크로.
+ */
+#define JWCU_CALL_INFO (FString(__FUNCTION__) + TEXT("(") + FString::FromInt(__LINE__) + TEXT(")"))
+
+/**
+ * UE_LOG에 호출 위치를 포함하도록 포장하는 매크로.
+ * @param cat 로그 카테고리
+ * @param ver 로그 상세
+ * @param fmt 언리얼 TEXT 문자열 포매팅, 가변 인자로 입력 가능
+ */
+#define JWCU_PRINT_LOG(cat, ver, fmt, ...) \
+{ \
+const FString __LogMessage__ = FString::Printf(fmt, ##__VA_ARGS__); \
+const FString __FullMessage__ = FString::Printf(TEXT("%s : %s"), *JWCU_CALL_INFO, *__LogMessage__); \
+UE_LOG(cat, ver, TEXT("%s"), *__FullMessage__); \
+}
+
+#pragma region ScreenDebugger
+
+/**
+ * 플러그인 내부 온스크린 디버그 메시지 활성화 콘솔 변수.
+ * 콘솔에서 JWCU.DebugScreen 1/0 으로 제어.
+ */
+extern JWCOMMONUTILITY_API TAutoConsoleVariable<bool> CVarJWCU_DebugScreen;
+
+/**
+ * 콘솔 변수로 제어 가능한 온스크린 디버그 메시지 매크로.
+ * @param Key 메시지 키 (-1이면 매번 새 줄)
+ * @param Duration 표시 시간 (초)
+ * @param Color FColor 색상
+ * @param fmt TEXT() 포맷 문자열 + 가변 인자
+ */
+#define JWCU_SCREEN_DEBUG(Key, Duration, Color, fmt, ...) \
+{ \
+	if (CVarJWCU_DebugScreen.GetValueOnGameThread() && GEngine) \
+	{ \
+		const FString __ScreenMsg__ = FString::Printf(fmt, ##__VA_ARGS__); \
+		GEngine->AddOnScreenDebugMessage(Key, Duration, Color, __ScreenMsg__); \
+	} \
+}
+
+#pragma endregion ScreenDebugger
+
+#pragma region ScopeWallLogger
+
+// 범위 로그 벽의 총 길이를 설정
+#define JWCU_LOG_WALL_WIDTH 60
+
+struct JWCOMMONUTILITY_API FJWCUScopeWallLogger
+{
+	FString FunctionName;
+	explicit FJWCUScopeWallLogger(const char* InFuncName) : FunctionName(InFuncName)
+	{
+		const int32 TextLen = FunctionName.Len() + 6;
+		const int32 SideLen = FMath::Max(0, (JWCU_LOG_WALL_WIDTH - TextLen) / 2);
+		const FString Padding = FString::ChrN(SideLen, '=');
+		UE_LOG(JWCULogWall, Warning, TEXT("%s < %s > %s"), *Padding, *FunctionName, *Padding);
+		UE_LOG(JWCULogWall, Warning, TEXT(""));
+	}
+	~FJWCUScopeWallLogger()
+	{
+		// 함수가 끝날 때(Scope를 벗어날 때) 자동 호출
+		UE_LOG(JWCULogWall, Warning, TEXT(""));
+		const FString Padding = FString::ChrN(JWCU_LOG_WALL_WIDTH, '=');
+		UE_LOG(JWCULogWall, Warning, TEXT("%s"), *Padding);
+	}
+};
+
+// 매크로 정의
+#define JWCU_SCOPE_WALL() FJWCUScopeWallLogger JWCUWallLogger(__FUNCTION__);
+
+#pragma endregion ScopeWallLogger

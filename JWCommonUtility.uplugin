@@ -1,0 +1,42 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+    "EngineVersion": "5.6",
+    "PlatformAllowList": [ "Win64" ],
+    "PlatformDenyList": [ "Win32", "Mac", "IOS", "Android" ],
+	"FriendlyName": "JWCommonUtility",
+	"Description": "General-purpose Common Utility Plugin by JungWoo. DateTime, String, Actor/Component, Math, Color, Widget, Debug, and Collection utility functions for Blueprint.",
+	"Category": "Code Plugins > Utilities",
+	"CreatedBy": "prayslaks",
+	"CreatedByURL": "https://github.com/prayslaks",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "JWCommonUtility",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+            "PlatformAllowList": [
+              "Win64"
+            ],
+            "PlatformDenyList": [
+              "Win32",
+              "Mac",
+              "IOS",
+              "Android"
+            ]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelViewViewModel",
+			"Enabled": true
+		}
+	]
+}
