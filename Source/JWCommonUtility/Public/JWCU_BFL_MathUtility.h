@@ -63,6 +63,24 @@ public:
 	static FRotator GetLookAtRotation(FVector InOrigin, FVector InTarget, EJWCU_LookAtAxis InAxis);
 
 	/**
+	 * [ Blueprint Function Library ] \n Quat Multiply Rotators \n 두 Rotator를 Quaternion으로 변환해 LeftQuat * RightQuat 순서로 곱한 뒤 Rotator로 반환한다.
+	 * @param InLeft 왼쪽 Quaternion 피연산자
+	 * @param InRight 오른쪽 Quaternion 피연산자
+	 * @return (InLeft.Quaternion() * InRight.Quaternion()).Rotator()
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="JWCU Blueprint Function Library")
+	static FRotator QuatMultiplyRotators(FRotator InLeft, FRotator InRight);
+
+	/**
+	 * [ Blueprint Function Library ] \n Quat Multiply Rotators Forward Vector \n 두 Rotator를 Quaternion으로 변환해 LeftQuat * RightQuat 순서로 곱한 뒤 Forward Vector를 반환한다.
+	 * @param InLeft 왼쪽 Quaternion 피연산자
+	 * @param InRight 오른쪽 Quaternion 피연산자
+	 * @return (InLeft.Quaternion() * InRight.Quaternion()).GetForwardVector()
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="JWCU Blueprint Function Library")
+	static FVector QuatMultiplyRotatorsForwardVector(FRotator InLeft, FRotator InRight);
+
+	/**
 	 * [ Blueprint Function Library ] \n Normalize Angle 180 \n 각도를 -180 ~ 180 범위로 정규화한다.
 	 * @param InAngle 정규화할 각도
 	 * @return 정규화된 각도 (-180 ~ 180)

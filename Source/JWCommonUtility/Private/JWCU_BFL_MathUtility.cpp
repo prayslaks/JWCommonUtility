@@ -71,6 +71,16 @@ FRotator UJWCU_BFL_MathUtility::GetLookAtRotation(FVector InOrigin, FVector InTa
 	return LookAtRotation;
 }
 
+FRotator UJWCU_BFL_MathUtility::QuatMultiplyRotators(const FRotator InLeft, const FRotator InRight)
+{
+	return (InLeft.Quaternion() * InRight.Quaternion()).GetNormalized().Rotator();
+}
+
+FVector UJWCU_BFL_MathUtility::QuatMultiplyRotatorsForwardVector(const FRotator InLeft, const FRotator InRight)
+{
+	return (InLeft.Quaternion() * InRight.Quaternion()).GetNormalized().GetForwardVector();
+}
+
 float UJWCU_BFL_MathUtility::NormalizeAngle180(float InAngle)
 {
 	// FRotator::NormalizeAxis와 동일한 결과를 반환
