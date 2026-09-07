@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Engine/Engine.h"
 #include "Modules/ModuleManager.h"
 #include "HAL/IConsoleManager.h"
 
@@ -30,11 +32,12 @@ JWCOMMONUTILITY_API DECLARE_LOG_CATEGORY_EXTERN(JWCULogWall, Log, All);
  * @param fmt 언리얼 TEXT 문자열 포매팅, 가변 인자로 입력 가능
  */
 #define JWCU_PRINT_LOG(cat, ver, fmt, ...) \
-{ \
-const FString __LogMessage__ = FString::Printf(fmt, ##__VA_ARGS__); \
-const FString __FullMessage__ = FString::Printf(TEXT("%s : %s"), *JWCU_CALL_INFO, *__LogMessage__); \
-UE_LOG(cat, ver, TEXT("%s"), *__FullMessage__); \
-}
+	do \
+	{ \
+		const FString __JWCULogMessage__ = FString::Printf(fmt, ##__VA_ARGS__); \
+		const FString __JWCUFullMessage__ = FString::Printf(TEXT("%s : %s"), *JWCU_CALL_INFO, *__JWCULogMessage__); \
+		UE_LOG(cat, ver, TEXT("%s"), *__JWCUFullMessage__); \
+	} while (0)
 
 #pragma region ScreenDebugger
 
@@ -52,13 +55,14 @@ extern JWCOMMONUTILITY_API TAutoConsoleVariable<bool> CVarJWCU_DebugScreen;
  * @param fmt TEXT() 포맷 문자열 + 가변 인자
  */
 #define JWCU_SCREEN_DEBUG(Key, Duration, Color, fmt, ...) \
-{ \
-	if (CVarJWCU_DebugScreen.GetValueOnGameThread() && GEngine) \
+	do \
 	{ \
-		const FString __ScreenMsg__ = FString::Printf(fmt, ##__VA_ARGS__); \
-		GEngine->AddOnScreenDebugMessage(Key, Duration, Color, __ScreenMsg__); \
-	} \
-}
+		if (CVarJWCU_DebugScreen.GetValueOnGameThread() && GEngine) \
+		{ \
+			const FString __JWCUScreenMsg__ = FString::Printf(fmt, ##__VA_ARGS__); \
+			GEngine->AddOnScreenDebugMessage(Key, Duration, Color, __JWCUScreenMsg__); \
+		} \
+	} while (0)
 
 #pragma endregion ScreenDebugger
 
@@ -91,3 +95,85 @@ struct JWCOMMONUTILITY_API FJWCUScopeWallLogger
 #define JWCU_SCOPE_WALL() FJWCUScopeWallLogger JWCUWallLogger(__FUNCTION__);
 
 #pragma endregion ScopeWallLogger
+
+#pragma region DeveloperWarning
+
+/**
+ * 넘겨받은 변수의 이름을 문자열로 반환하는 매크로.
+ * @param var 이름을 문자열로 반환받고 싶은 변수
+ */
+#define JWCU_VAR_NAME_TEXT(var) TEXT(#var)
+
+#if UE_BUILD_SHIPPING
+
+/**
+ * 온스크린 경고 출력 내부 매크로. Shipping 빌드에서는 아무것도 하지 않는다.
+ */
+#define JWCU_INTERNAL_SCREEN_WARN(Duration, Color, Message) do { } while (0)
+
+#else
+
+/**
+ * 온스크린 경고 출력 내부 매크로. GEngine 이 없는 실행 경로(커맨드릿, 초기화 이전 등)에서는 건너뛴다.
+ */
+#define JWCU_INTERNAL_SCREEN_WARN(Duration, Color, Message) \
+	do \
+	{ \
+		if (GEngine) \
+		{ \
+			GEngine->AddOnScreenDebugMessage(-1, Duration, Color, Message); \
+		} \
+	} while (0)
+
+#endif
+
+/**
+ * 개발자 경고를 로그와 온스크린 메시지에 함께 남기는 내부 매크로.
+ */
+#define JWCU_INTERNAL_DEVELOPER_WARN(Message) \
+	do \
+	{ \
+		const FString __JWCUWarnMessage__ = (Message); \
+		UE_LOG(JWCULog, Warning, TEXT("%s"), *__JWCUWarnMessage__); \
+		JWCU_INTERNAL_SCREEN_WARN(60.0f, FColor::Red, __JWCUWarnMessage__); \
+	} while (0)
+
+/**
+ * GEngine->AddOnScreenDebugMessage 를 호출 위치와 함께 출력하는 매크로.
+ * @param tme 메시지 출력 유지 시간
+ * @param clr 메시지 출력 시 색상
+ * @param fmt 언리얼 TEXT 문자열 포매팅, 가변 인자로 입력 가능
+ */
+#define JWCU_SCREEN_MESSAGE(tme, clr, fmt, ...) \
+	do \
+	{ \
+		const FString __JWCULogMessage__ = FString::Printf(fmt, ##__VA_ARGS__); \
+		const FString __JWCUFullMessage__ = FString::Printf(TEXT("[%s] %s"), *JWCU_CALL_INFO, *__JWCULogMessage__); \
+		JWCU_INTERNAL_SCREEN_WARN(tme, clr, __JWCUFullMessage__); \
+	} while (0)
+
+/**
+ * 넘겨받은 포인터 변수가 널포인터인지 확인하고, 널포인터라면 로그와 온스크린 메시지로 경고하는 매크로.
+ * @param var 널포인터 확인이 필요한 변수
+ */
+#define JWCU_CHECK_NULLPTR(var) \
+	JWCU_INTERNAL_DEVELOPER_WARN(FString::Printf(TEXT("%s : Warning! %s is nullptr!"), *JWCU_CALL_INFO, JWCU_VAR_NAME_TEXT(var)))
+
+/**
+ * 구현이 필요한 함수에 표시해 두는 매크로. 호출되면 로그와 온스크린 메시지로 경고한다.
+ */
+#define JWCU_WARN_NO_IMPLEMENT() \
+	JWCU_INTERNAL_DEVELOPER_WARN(FString::Printf(TEXT("%s : Warning! Have to implement this function!"), *JWCU_CALL_INFO))
+
+/**
+ * 구현이 필요한 함수가 문자열을 반환해야 할 때 쓰는 자리 표시 문자열 매크로.
+ */
+#define JWCU_WARN_NO_IMPLEMENT_STRING() TEXT("Have to implement this function!")
+
+/**
+ * 호출되어서는 안 되는 함수에 표시해 두는 매크로. 호출되면 로그와 온스크린 메시지로 경고한다.
+ */
+#define JWCU_WARN_SHOULD_NO_CALL() \
+	JWCU_INTERNAL_DEVELOPER_WARN(FString::Printf(TEXT("%s : Warning! Should not call this function!"), *JWCU_CALL_INFO))
+
+#pragma endregion DeveloperWarning
