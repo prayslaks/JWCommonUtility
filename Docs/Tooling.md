@@ -2,6 +2,8 @@
 
 # JWCommonUtility 도구와 에이전트 스킬
 
+> 부분 갱신 일자: 2026-09-10 — 도구 선택과 공통 순서를 담은 unreal-tool-runbook 스킬을 배포 목록에 추가.
+
 > 부분 갱신 일자: 2026-09-10 — 설치 기록을 추적 정책에서 분리해 Config/JWCommonUtilityTools.local.json 으로 이관. 일반 설치·제거는 프로젝트 정책 JSON을 더 이상 쓰지 않는다.
 
 > 부분 갱신 일자: 2026-09-09 — Runtime 모듈에 범용 개발자 경고 매크로(`JWCU_CHECK_NULLPTR`, `JWCU_WARN_NO_IMPLEMENT`, `JWCU_WARN_SHOULD_NO_CALL`, `JWCU_SCREEN_MESSAGE`, `JWCU_VAR_NAME_TEXT`)를 추가. 호스트는 자기 접두사 별칭 헤더로 감싸 쓴다.
@@ -37,7 +39,8 @@ JWCommonUtility/
 │  ├─ unreal-code-refine/       SKILL.md + scan_structure.py 호환 진입점
 │  ├─ unreal-comment-maker/     SKILL.md + check_comments.py 호환 진입점
 │  ├─ unreal-doc-writer/        SKILL.md + references + agents
-│  └─ unreal-overview-writer/   SKILL.md + references + agents
+│  ├─ unreal-overview-writer/   SKILL.md + references + agents
+│  └─ unreal-tool-runbook/      SKILL.md
 └─ Docs/
    ├─ Tooling.md
    ├─ AgentSupport.md
@@ -121,6 +124,7 @@ python Plugins/JWCommonUtility/Tools/check_comments.py --missing-only Source
 - [unreal-comment-maker](../Agent/Skills/unreal-comment-maker/SKILL.md): 주석·헤더 스타일 점검과 설명 작성.
 - [unreal-doc-writer](../Agent/Skills/unreal-doc-writer/SKILL.md): 개별 Unreal 시스템의 문서 생성·갱신·구현과의 불일치 감사. 런타임·에디터·데이터·사용법·검증 절차를 설명.
 - [unreal-overview-writer](../Agent/Skills/unreal-overview-writer/SKILL.md): 프로젝트 전체 구조·시스템 관계·네트워크 경계와 온보딩 개요. 상세 문서는 unreal-doc-writer로 연결.
+- [unreal-tool-runbook](../Agent/Skills/unreal-tool-runbook/SKILL.md): 어떤 도구를 어떤 순서로 쓸지 고르는 진입점. 라우팅 표, 공통 순서, 쓰기 경계, 자주 틀리는 지점만 두고 상세 절차는 각 스킬로 보낸다.
 
 ```powershell
 python Plugins/JWCommonUtility/Agent/Skills/unreal-code-refine/scan_structure.py Source

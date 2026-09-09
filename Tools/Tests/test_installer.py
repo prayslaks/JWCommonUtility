@@ -73,7 +73,8 @@ class InstallerTests(unittest.TestCase):
         claude = self.write("CLAUDE.md", "# Different existing owner rules\n")
         originals = (agent.read_bytes(), claude.read_bytes())
         self.command("install")
-        expected_skills = {"unreal-code-refine", "unreal-comment-maker", "unreal-doc-writer", "unreal-overview-writer"}
+        expected_skills = {"unreal-code-refine", "unreal-comment-maker", "unreal-doc-writer",
+                           "unreal-overview-writer", "unreal-tool-runbook"}
         self.assertEqual({e["path"] for e in self.entries()},
                          {f"{agent}/skills/{name}" for agent in (".agents", ".claude") for name in expected_skills}
                          | {"Tools/JWCommonUtility", "Docs/JWCommonUtility"})
