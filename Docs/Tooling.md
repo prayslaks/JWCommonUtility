@@ -2,6 +2,8 @@
 
 # JWCommonUtility 도구와 에이전트 스킬
 
+> 부분 갱신 일자: 2026-09-10 — 주석 검사의 include 순서 판정에서 UHT 필수인 *.generated.h 를 제외. owned_paths 로 검사 범위를 소유 코드로 한정하고 --include-external 을 추가. 삽입한 저작권 헤더 뒤에 빈 줄을 둔다.
+
 > 부분 갱신 일자: 2026-09-10 — 도구 선택과 공통 순서를 담은 unreal-tool-runbook 스킬을 배포 목록에 추가.
 
 > 부분 갱신 일자: 2026-09-10 — 설치 기록을 추적 정책에서 분리해 Config/JWCommonUtilityTools.local.json 으로 이관. 일반 설치·제거는 프로젝트 정책 JSON을 더 이상 쓰지 않는다.
@@ -80,6 +82,7 @@ Python 도구는 Python 3.10 이상과 표준 라이브러리만 사용한다. �
 - Python 읽기 도구의 --root 기본값은 현재 작업 디렉터리다. 입력 경로와 명시한 --config 상대 경로는 --root 기준이다. 기본 정책은 --root에서 상위 .uproject를 찾아 해당 호스트의 Config/JWCommonUtilityTools.json을 읽는다. 스크립트 설치 위치에서 검사 대상을 추측하지 않는다.
 - update_copyright.py는 대상 혼동을 막기 위해 --root와 --old, --new를 명시해야 한다.
 - 검사기의 호스트별 저작권·제외 파일은 호스트 Config/JWCommonUtilityTools.json에 둔다. 플러그인 안에 특정 호스트의 설정 파일을 넣지 않는다.
+- owned_paths 를 설정하면 그 밖의 파일은 주석·구조·코드 탐색·저작권 도구가 모두 건너뛴다. 외부 코드를 직접 손봐야 할 때만 --include-external 을 붙인다.
 
 다음 예는 플러그인을 호스트의 Plugins/JWCommonUtility에 놓고 호스트 루트에서 실행하는 경우다. 폴더 배치가 다르면 스크립트 경로를 실제 위치로 바꾼다.
 

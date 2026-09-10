@@ -17,6 +17,8 @@ def main(argv=None):
     parser.add_argument("--root", default=".")
     parser.add_argument("--config")
     parser.add_argument("--no-context", action="store_true")
+    parser.add_argument("--include-external", action="store_true",
+                        help="owned_paths 밖의 외부 코드도 검사한다 (기본: 제외)")
     parser.add_argument("--checks", choices=("all", "guard-logs", "forward-declarations"), default="all")
     parser.add_argument("--all-guards", action="store_true", help="정상 권한 분기·긍정 조건의 반환도 검토 후보에 포함")
     parser.add_argument("--json", action="store_true", help="stdout에 구조화된 보고서 출력")
@@ -26,7 +28,7 @@ def main(argv=None):
     try:
         root = os.path.abspath(args.root)
         context = load_context(root, args.config)
-        files = source_files(root, args.paths, context)
+        files = source_files(root, args.paths, context, include_external=args.include_external)
     except (OSError, ValueError) as exc:
         parser.error(str(exc))
     emit_context(context, not args.no_context)

@@ -24,6 +24,19 @@ def is_excluded(context, path):
                relative_paths(context["policy"].get("excluded_paths", []), "excluded_paths"))
 
 
+def is_owned(context, path):
+    """owned_paths 가 있으면 그 안의 파일만 프로젝트 소유로 본다. 비어 있으면 모든 파일이 소유 대상이다."""
+    patterns = relative_paths(context["policy"].get("owned_paths", []), "owned_paths")
+    if not patterns:
+        return True
+    relative = os.path.relpath(path, context["root"]).replace(os.sep, "/")
+    for pattern in patterns:
+        prefix = pattern.rstrip("/")
+        if fnmatch.fnmatchcase(relative, pattern) or relative.startswith(prefix + "/"):
+            return True
+    return False
+
+
 def iter_source_files(targets):
     """Stable source traversal shared by read-only checks; never follow link aliases."""
     seen = set()
@@ -47,7 +60,8 @@ def iter_source_files(targets):
                 yield path
 
 
-def source_files(root, paths, context, *, headers_only=False, defaults=("Source", "Plugins")):
+def source_files(root, paths, context, *, headers_only=False, defaults=("Source", "Plugins"),
+                 include_external=False):
     suffixes = (".h",) if headers_only else (".h", ".cpp")
     targets = [os.path.abspath(os.path.join(root, p)) for p in paths] if paths else [
         os.path.join(root, p) for p in defaults if os.path.isdir(os.path.join(root, p))]
@@ -59,7 +73,8 @@ def source_files(root, paths, context, *, headers_only=False, defaults=("Source"
     files = [p for p in iter_source_files(targets) if p.endswith(suffixes)]
     if not files:
         raise ValueError("검사할 소스 파일이 없습니다 (링크·생성물 제외).")
-    return [p for p in files if not is_excluded(context, p)]
+    # 남의 코드는 규약이 다르므로 기본적으로 모든 검사에서 뺀다. 직접 손봐야 할 때만 include_external 로 켠다.
+    return [p for p in files if not is_excluded(context, p) and (include_external or is_owned(context, p))]
 
 
 def is_link(path):
@@ -96,13 +111,14 @@ def validate_policy(policy):
         raise ValueError("Policy must be a JSON object with schema_version: 1.")
     # "_installation" is the pre-split installation record. It stays accepted so existing hosts keep working
     # until the installer migrates it into STATE_RELATIVE.
-    unknown = set(policy) - {"schema_version", "license_header", "excluded_paths", "guard_logs", "agent", "_installation", "_copyright"}
+    unknown = set(policy) - {"schema_version", "license_header", "owned_paths", "excluded_paths", "guard_logs", "agent", "_installation", "_copyright"}
     if unknown:
         raise ValueError("Unknown policy keys: " + ", ".join(sorted(unknown)))
     header = policy.get("license_header")
     if header is not None and (not isinstance(header, str) or not header.strip() or "\n" in header or "\r" in header):
         raise ValueError("license_header must be a single non-empty line or null.")
     relative_paths(policy.get("excluded_paths", []), "excluded_paths")
+    relative_paths(policy.get("owned_paths", []), "owned_paths")
     guard = policy.get("guard_logs", {})
     if not isinstance(guard, dict) or set(guard) - {"log_functions", "excluded_conditions"}:
         raise ValueError("guard_logs supports only log_functions and excluded_conditions.")

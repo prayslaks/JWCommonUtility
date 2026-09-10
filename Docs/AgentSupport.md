@@ -2,6 +2,8 @@
 
 # 프로젝트 에이전트 지원 설치·제거
 
+> 부분 갱신 일자: 2026-09-10 — owned_paths 로 검사·정리 대상 범위를 프로젝트 소유 코드로 한정. 외부 코드는 --include-external 로만 다룬다.
+
 > 부분 갱신 일자: 2026-09-10 — 설치 기록을 추적 정책에서 분리해 Config/JWCommonUtilityTools.local.json 으로 이관. 일반 설치·제거는 프로젝트 정책 JSON을 더 이상 쓰지 않는다.
 
 > 부분 갱신 일자: 2026-09-09 — Redirect PowerShell 도구 폐기에 따라 Python 전용 사용법으로 정리.
@@ -97,7 +99,12 @@ Python 설치기·검사기는 Windows/macOS용 경로·링크 API를 사용한�
 | --- | --- |
 | schema_version | 현재 1. 알 수 없는 버전·키와 중복 JSON 키는 Python 도구에서 오류 |
 | license_header | 주석 검사기의 C++ 첫 줄 기대 문구. null/생략이면 LICENSE만 생략 |
+| owned_paths | 프로젝트가 소유한 경로 패턴 배열. 생략·빈 배열이면 모든 파일이 대상. 디렉터리 이름만 적으면 그 하위 전체가 범위 |
 | excluded_paths | Python 주석·구조·코드 탐색·저작권 도구의 공통 제외 경로 패턴. 호스트 루트 기준, 슬래시 사용 |
+
+owned_paths 는 소유 경계를, excluded_paths 는 소유 경로 안에서의 개별 예외를 정한다. 남이 만든 플러그인은 규약이 다르므로 owned_paths 밖에 두면 주석·구조·코드 탐색·저작권 도구가 모두 건너뛴다. 특히 update_copyright 는 남의 저작권 표기를 우리 것으로 덮어쓰지 않는다.
+
+그 코드를 직접 손봐야 하는 경우에만 각 도구에 --include-external 을 붙여 범위를 넓힌다. 기본값은 항상 제외다.
 | guard_logs | 코드 탐색의 로그 함수 추가·조건 제외 설정. [CodeReview.md](CodeReview.md) 참조 |
 | agent.instructions | 작업에 필요한 프로젝트 지침 문자열 배열 |
 | agent.guidance_files | 프로젝트 루트 내부의 기존 지침 파일 경로 배열. 없으면 빈 배열 |

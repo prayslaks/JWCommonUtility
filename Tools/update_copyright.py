@@ -27,7 +27,7 @@ import os
 import re
 import sys
 from datetime import date
-from jwcu_context import emit_context, load_context, is_link, is_excluded
+from jwcu_context import emit_context, load_context, is_link, is_excluded, is_owned
 
 # --- 설정 -------------------------------------------------------------------
 
@@ -93,6 +93,11 @@ def split_first_line(body):
     if raw.endswith("\r"):
         return raw[:-1], "\r\n", rest
     return raw, "\n", rest
+
+
+def starts_blank(text):
+    """본문 첫 줄이 이미 빈 줄인지 본다. 헤더 뒤 빈 줄을 중복으로 넣지 않기 위해 쓴다."""
+    return text == "" or text.startswith("\n") or text.startswith("\r\n")
 
 
 def dominant_newline(body):
@@ -169,8 +174,11 @@ class Rewriter:
         nl = dominant_newline(body) or "\n"
         if first.startswith("#!"):
             # 쉐뱅은 반드시 1번 줄이어야 하므로 그 아래에 넣는다.
-            return bom + first + nl + header + nl + rest, "inserted"
-        return bom + header + nl + body, "inserted"
+            gap = "" if starts_blank(rest) else nl
+            return bom + first + nl + header + nl + gap + rest, "inserted"
+        # 헤더와 본문 사이에 빈 줄 한 줄을 둔다. 기존 파일들의 배치와 맞춘다.
+        gap = "" if starts_blank(body) else nl
+        return bom + header + nl + gap + body, "inserted"
 
     def handle(self, path):
         ext = os.path.splitext(path)[1].lower()
@@ -219,6 +227,9 @@ class Rewriter:
                 path = os.path.join(dirpath, name)
                 if is_link(path) or is_excluded(self.context, path):
                     continue
+                # 남의 저작권을 우리 표기로 덮어쓰지 않는다.
+                if not (self.args.include_external or is_owned(self.context, path)):
+                    continue
                 if os.path.abspath(path) == self_path and not self.args.include_self:
                     continue
                 self.handle(path)
@@ -229,6 +240,8 @@ def main(argv):
     ap.add_argument("--root", required=True, help="순회 시작 디렉터리 (명시 필수)")
     ap.add_argument("--config", help="프로젝트 설정 경로")
     ap.add_argument("--no-context", action="store_true", help="지침 안내 출력만 생략")
+    ap.add_argument("--include-external", action="store_true",
+                    help="owned_paths 밖의 외부 코드도 대상에 넣는다 (기본: 제외)")
     ap.add_argument("--old", required=True, help="바꿀 옛 저작권자 이름 (명시 필수)")
     ap.add_argument("--new", required=True, help="새 저작권자 이름")
     ap.add_argument("--year", default=None, help="연도도 함께 바꾼다 (미지정 시 원본 유지)")

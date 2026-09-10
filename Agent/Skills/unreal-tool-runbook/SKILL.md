@@ -9,6 +9,8 @@ description: JWCommonUtility 공용 도구와 스킬의 진입점. 어떤 도구
 
 > 부분 갱신 일자: 2026-09-10 — 도구 라우팅·공통 순서·자주 틀리는 지점을 모은 진입점으로 신설.
 
+> 부분 갱신 일자: 2026-09-10 — owned_paths 소유 범위와 --include-external 을 반영.
+
 이 문서는 **무엇을 할지 정해졌을 때 어떤 도구로 시작할지**를 고르는 용도다. 개별 작업의 판단 기준은 각 전용 스킬과 [CodeReview.md](../../../Docs/CodeReview.md), [Tooling.md](../../../Docs/Tooling.md)에 있다. 링크로 발견했다면 이 문서의 상대 경로는 심볼릭 링크/junction을 해석한 플러그인 원본 디렉터리 기준으로 읽는다.
 
 ## 시작 전 확인
@@ -59,6 +61,7 @@ python Plugins/JWCommonUtility/Tools/install_agent_support.py install --dry-run
 - **Epic 헤더는 `--old`/`--new`로 바뀌지 않는다.** 치환 정규식이 `Copyright (c) YYYY <이름>` 형태만 잡는다. `--normalize --replace-epic`으로 정규화한다.
 - **헤더가 아예 없는 파일은 정규화 대상이 아니다.** `--add-missing`과 `--add-missing-under`로 삽입 범위를 명시해야 들어간다.
 - **`excluded_paths`에 걸린 파일은 조용히 빠진다.** 검사 결과의 "검사 파일 N개"가 넘긴 파일 수와 맞는지 본다. 제외 사유가 사라졌으면 정책에서 지운다.
+- **`owned_paths` 밖의 코드도 조용히 빠진다.** 외부 플러그인은 규약이 달라 기본적으로 모든 도구가 건너뛴다. 그 코드를 직접 고쳐야 할 때만 `--include-external` 을 붙인다.
 - **종료 코드 의미가 도구마다 다르다.** 주석 감사는 ERROR가 있으면 실패로, `check_code.py`는 후보 수와 관계없이 0으로 끝난다. 입력·설정 오류만 2다.
 - **로그를 남기는 매크로를 새로 만들면 `guard_logs.log_functions`에 등록한다.** 등록하지 않으면 그 매크로로 진단하는 guard clause가 계속 후보로 잡힌다. 화면 출력만 하는 매크로는 등록하지 않는다.
 - **`--config`에 준 정책의 `agent.guidance_files`는 실제로 있어야 한다.** 임시 정책으로 검사할 때 이 항목을 비우지 않으면 입력 오류로 끝난다.

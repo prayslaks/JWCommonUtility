@@ -323,6 +323,8 @@ def main():
     parser.add_argument("--root", default=".", help="상대 입력 경로와 출력 경로의 기준 (기본: 현재 디렉터리)")
     parser.add_argument("--config", help="프로젝트 설정 경로")
     parser.add_argument("--no-context", action="store_true", help="지침 안내 출력만 생략")
+    parser.add_argument("--include-external", action="store_true",
+                        help="owned_paths 밖의 외부 코드도 검사한다 (기본: 제외)")
     parser.add_argument("--inventory", action="store_true",
                         help="멤버 함수 정의 목록만 정렬 출력 (분할 전후 대조용)")
     args = parser.parse_args()
@@ -335,7 +337,7 @@ def main():
         parser.error(str(exc))
     emit_context(context, not args.no_context)
     try:
-        targets = source_files(root, args.paths, context)
+        targets = source_files(root, args.paths, context, include_external=args.include_external)
     except (OSError, ValueError) as exc:
         parser.error(str(exc))
 

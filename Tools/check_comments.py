@@ -23,6 +23,8 @@ RE_TYPE_MACRO = re.compile(r"^\s*(UCLASS|USTRUCT|UENUM|UINTERFACE)\s*\(")
 RE_MEMBER_MACRO = re.compile(r"^\s*(UPROPERTY|UFUNCTION)\s*\(")
 RE_INCLUDE = re.compile(r'^\s*#include\s+["<]([^">]+)[">]')
 RE_FWD_DECL = re.compile(r"^\s*(class|struct|enum\s+class)\s+\w+\s*;")
+# UHT 는 *.generated.h 를 마지막 include 로 요구한다. 전방 선언보다 뒤에 오는 것이 정상이므로 순서 판정에서 뺀다.
+RE_GENERATED_INCLUDE = re.compile(r'^\s*#include\s+"[^"]*\.generated\.h"')
 RE_DOXYGEN = re.compile(r"@(param|return|returns|brief|note|see)\b")
 RE_CPP_FUNC_DEF = re.compile(r"^[A-Za-z_][\w:<>,\s\*&]*\b\w+::\w+\s*\(")
 
@@ -100,7 +102,8 @@ def check_header(path: str, lines: list[str], out: list[Finding], license_header
         if RE_INCLUDE.match(line):
             if first_include is None:
                 first_include = i
-            last_include = i
+            if not RE_GENERATED_INCLUDE.match(line):
+                last_include = i
         elif RE_FWD_DECL.match(line) and first_fwd is None:
             first_fwd = i
 
@@ -187,6 +190,8 @@ def main(argv=None, *, missing_only=False) -> int:
     parser.add_argument("--root", default=".", help="입력·설정·출력 경로 기준 (기본: 현재 디렉터리)")
     parser.add_argument("--config", help="루트 기준 설정 경로 (기본: Config/JWCommonUtilityTools.json, 없어도 실행 가능)")
     parser.add_argument("--no-context", action="store_true", help="지침 안내 출력만 생략 (설정은 계속 적용)")
+    parser.add_argument("--include-external", action="store_true",
+                        help="owned_paths 밖의 외부 코드도 검사한다 (기본: 제외)")
     parser.add_argument("--summary", action="store_true", help="파일별 위반 개수만 많은 순으로 출력")
     parser.add_argument("--errors-only", action="store_true", help="ERROR 만 출력")
     parser.add_argument("--limit", type=int, default=0, help="출력할 findings 최대 개수 (0=제한 없음)")
@@ -209,7 +214,8 @@ def main(argv=None, *, missing_only=False) -> int:
         print("LICENSE 검사 생략: 프로젝트 license_header가 설정되지 않았습니다.", file=sys.stderr)
     try:
         targets = source_files(root, args.paths, context, headers_only=args.missing_only,
-                               defaults=("Source",) if missing_only else ("Source", "Plugins"))
+                               defaults=("Source",) if missing_only else ("Source", "Plugins"),
+                               include_external=args.include_external)
     except (OSError, ValueError) as exc:
         parser.error(str(exc))
 
