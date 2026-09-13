@@ -157,7 +157,13 @@ struct JWCOMMONUTILITY_API FJWCUScopeWallLogger
  * @param var 널포인터 확인이 필요한 변수
  */
 #define JWCU_CHECK_NULLPTR(var) \
-	JWCU_INTERNAL_DEVELOPER_WARN(FString::Printf(TEXT("%s : Warning! %s is nullptr!"), *JWCU_CALL_INFO, JWCU_VAR_NAME_TEXT(var)))
+	do \
+	{ \
+		if ((var) == nullptr) \
+		{ \
+			JWCU_INTERNAL_DEVELOPER_WARN(FString::Printf(TEXT("%s : Warning! %s is nullptr!"), *JWCU_CALL_INFO, JWCU_VAR_NAME_TEXT(var))); \
+		} \
+	} while (0)
 
 /**
  * 구현이 필요한 함수에 표시해 두는 매크로. 호출되면 로그와 온스크린 메시지로 경고한다.
