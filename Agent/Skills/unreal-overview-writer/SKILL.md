@@ -3,7 +3,7 @@ name: unreal-overview-writer
 description: Unreal Engine 프로젝트의 전체 구조를 Mermaid 중심으로 설명하는 한글 개요 문서를 생성하거나 갱신한다. Codex가 Unreal 프로젝트의 큰 그림, C++ 클래스, Blueprint 에셋, DataAsset, Subsystem, Interface, 런타임 흐름, 네트워크/Authority 경계, 온보딩용 `Docs/SystemOverview.md` 같은 상위 개발 문서를 작성해야 할 때 사용한다.
 ---
 
-<!-- Copyright (c) 2026 Prayslaks. All rights reserved. Unauthorized copying, modification, or distribution of this file, via any medium is strictly prohibited. Proprietary and confidential. -->
+<!-- Copyright (c) 2026 Prayslaks. SPDX-License-Identifier: MIT -->
 
 
 # Unreal 프로젝트 개요 작성기

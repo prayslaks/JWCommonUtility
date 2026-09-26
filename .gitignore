@@ -1,0 +1,17 @@
+#--- 컴파일 및 빌드 결과물 ---
+Binaries/
+Intermediate/
+Build/
+DerivedDataCache/
+Saved/
+
+#--- Python 실행 산출물 ---
+__pycache__/
+*.pyc
+
+#--- IDE·OS 생성 파일 ---
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

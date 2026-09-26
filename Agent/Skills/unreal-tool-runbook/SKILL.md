@@ -3,7 +3,7 @@ name: unreal-tool-runbook
 description: JWCommonUtility 공용 도구와 스킬의 진입점. 어떤 도구를 어떤 순서로 쓸지 고를 때, 코드 검토·주석·저작권·구조·문서 작업의 시작점을 찾을 때, 설치 상태를 확인할 때 사용한다. 개별 작업의 상세 절차는 각 전용 스킬이 담당하므로 여기서는 라우팅과 공통 순서만 다룬다.
 ---
 
-<!-- Copyright (c) 2026 Prayslaks. All rights reserved. Unauthorized copying, modification, or distribution of this file, via any medium is strictly prohibited. Proprietary and confidential. -->
+<!-- Copyright (c) 2026 Prayslaks. SPDX-License-Identifier: MIT -->
 
 # JWCommonUtility 도구 운영 순서
 

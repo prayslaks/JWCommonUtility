@@ -1,4 +1,4 @@
-# Copyright (c) 2026 Prayslaks. All rights reserved. Unauthorized copying, modification, or distribution of this file, via any medium is strictly prohibited. Proprietary and confidential.
+# Copyright (c) 2026 Prayslaks. SPDX-License-Identifier: MIT
 """저작권 표기 일괄 교체 도구.
 
 개인 명의로 박혀 있는 저작권 문구를 팀/회사 명의로 바꾼다.

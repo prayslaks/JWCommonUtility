@@ -1,4 +1,4 @@
-# Copyright (c) 2026 Prayslaks. All rights reserved. Unauthorized copying, modification, or distribution of this file, via any medium is strictly prohibited. Proprietary and confidential.
+# Copyright (c) 2026 Prayslaks. SPDX-License-Identifier: MIT
 interface:
   display_name: "Unreal 프로젝트 개요 작성기"
   short_description: "Unreal 프로젝트 전체 구조와 관계를 Mermaid로 문서화"

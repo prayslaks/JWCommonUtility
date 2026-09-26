@@ -3,7 +3,7 @@ name: unreal-comment-maker
 description: Unreal C++ 헤더와 cpp의 설명 주석, 저작권 헤더, include 순서를 점검하고 호스트 프로젝트 규약에 맞게 정리한다. 주석 작성·정리·감사 요청에 사용한다.
 ---
 
-<!-- Copyright (c) 2026 Prayslaks. All rights reserved. Unauthorized copying, modification, or distribution of this file, via any medium is strictly prohibited. Proprietary and confidential. -->
+<!-- Copyright (c) 2026 Prayslaks. SPDX-License-Identifier: MIT -->
 
 # unreal-comment-maker
 

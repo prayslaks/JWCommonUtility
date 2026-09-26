@@ -3,7 +3,7 @@ name: unreal-doc-writer
 description: Unreal 프로젝트의 개별 시스템 개발 문서를 한글로 생성·갱신하고 현재 코드·Config·에셋 근거와의 불일치를 점검한다. 런타임·에디터 동작, 데이터 구조, 사용법, 확장·검증·유지보수 절차를 문서화할 때 사용한다. 프로젝트 전체 관계도와 온보딩 개요는 unreal-overview-writer가 담당한다.
 ---
 
-<!-- Copyright (c) 2026 Prayslaks. All rights reserved. Unauthorized copying, modification, or distribution of this file, via any medium is strictly prohibited. Proprietary and confidential. -->
+<!-- Copyright (c) 2026 Prayslaks. SPDX-License-Identifier: MIT -->
 
 
 # Unreal 시스템 문서 작성기

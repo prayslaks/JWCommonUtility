@@ -3,7 +3,7 @@ name: unreal-code-refine
 description: Unreal C++ 파일을 역할별 cpp 분할, 독립 타입 헤더 추출, CVar·로그 소유권 정리, include 축소로 리팩터링한다. 큰 C++ 파일의 구조 정리에 사용하며 프로젝트 폴더나 에이전트 설치 정리에는 사용하지 않는다.
 ---
 
-<!-- Copyright (c) 2026 Prayslaks. All rights reserved. Unauthorized copying, modification, or distribution of this file, via any medium is strictly prohibited. Proprietary and confidential. -->
+<!-- Copyright (c) 2026 Prayslaks. SPDX-License-Identifier: MIT -->
 
 # unreal-code-refine
 
