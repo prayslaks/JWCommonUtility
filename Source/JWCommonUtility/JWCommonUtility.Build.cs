@@ -7,6 +7,10 @@ public class JWCommonUtility : ModuleRules
 	public JWCommonUtility(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		if (Target.Platform == UnrealTargetPlatform.Win64)
+		{
+			PublicSystemLibraries.Add("Crypt32.lib");
+		}
 
 		PublicIncludePaths.AddRange(
 			[
@@ -23,6 +27,9 @@ public class JWCommonUtility : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			[
 				"Core",
+				"CoreUObject",
+				"Engine",
+				"DeveloperSettings",
 				"UMG",							// Widget Blueprint
 				"GameplayTags"					// FGameplayTag, FGameplayTagContainer
 			]
@@ -30,10 +37,9 @@ public class JWCommonUtility : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(
 			[
-				"CoreUObject",
-				"Engine",						// AActor, UCurveFloat, DrawDebug
 				"Slate",
 				"SlateCore",
+				"Json",
 			]
 		);
 
