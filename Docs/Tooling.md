@@ -2,6 +2,8 @@
 
 # JWCommonUtility 도구와 에이전트 스킬
 
+> 부분 갱신 일자: 2026-09-28 — 음성 통합 스킬을 호스트 ProjectZK로 이전하고 공용 unreal-ai-provider-keys 스킬로 키 관리 책임 분리.
+
 > 부분 갱신 일자: 2026-09-10 — 주석 검사의 include 순서 판정에서 UHT 필수인 *.generated.h 를 제외. owned_paths 로 검사 범위를 소유 코드로 한정하고 --include-external 을 추가. 삽입한 저작권 헤더 뒤에 빈 줄을 둔다.
 
 > 부분 갱신 일자: 2026-09-10 — 도구 선택과 공통 순서를 담은 unreal-tool-runbook 스킬을 배포 목록에 추가.
@@ -42,7 +44,8 @@ JWCommonUtility/
 │  ├─ unreal-comment-maker/     SKILL.md + check_comments.py 호환 진입점
 │  ├─ unreal-doc-writer/        SKILL.md + references + agents
 │  ├─ unreal-overview-writer/   SKILL.md + references + agents
-│  └─ unreal-tool-runbook/      SKILL.md
+│  ├─ unreal-tool-runbook/      SKILL.md
+│  └─ unreal-ai-provider-keys/  SKILL.md
 └─ Docs/
    ├─ Tooling.md
    ├─ AgentSupport.md
@@ -128,6 +131,7 @@ python Plugins/JWCommonUtility/Tools/check_comments.py --missing-only Source
 - [unreal-doc-writer](../Agent/Skills/unreal-doc-writer/SKILL.md): 개별 Unreal 시스템의 문서 생성·갱신·구현과의 불일치 감사. 런타임·에디터·데이터·사용법·검증 절차를 설명.
 - [unreal-overview-writer](../Agent/Skills/unreal-overview-writer/SKILL.md): 프로젝트 전체 구조·시스템 관계·네트워크 경계와 온보딩 개요. 상세 문서는 unreal-doc-writer로 연결.
 - [unreal-tool-runbook](../Agent/Skills/unreal-tool-runbook/SKILL.md): 어떤 도구를 어떤 순서로 쓸지 고르는 진입점. 라우팅 표, 공통 순서, 쓰기 경계, 자주 틀리는 지점만 두고 상세 절차는 각 스킬로 보낸다.
+- [unreal-ai-provider-keys](../Agent/Skills/unreal-ai-provider-keys/SKILL.md): 공급자 카탈로그·암호화 키 저장·관리 화면·GameInstance별 BP 조회를 연결하고 검증한다. STT·TTS·LLM이 공유하며, 전사기와 게임 어댑터의 통합 절차는 호스트가 소유한다.
 
 ```powershell
 python Plugins/JWCommonUtility/Agent/Skills/unreal-code-refine/scan_structure.py Source

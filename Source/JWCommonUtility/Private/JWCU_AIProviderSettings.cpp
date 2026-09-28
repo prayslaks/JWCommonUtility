@@ -8,7 +8,7 @@
 const TArray<FJWCU_AIProviderDefinition>& UJWCU_AIProviderSettings::GetProviderCatalog()
 {
 	// 공급자 ID는 저장소 식별자이므로 변경하지 않는다. 지원 종료 시 항목 대신 상태를 바꾼다.
-	static const TArray<FJWCU_AIProviderDefinition> Catalog{{TEXT("OpenAI"), false}, {TEXT("Gemini"), false}};
+	static const TArray<FJWCU_AIProviderDefinition> Catalog{{TEXT("OpenAI"), false}, {TEXT("Gemini"), false}, {TEXT("ElevenLabs"), false}};
 	return Catalog;
 }
 

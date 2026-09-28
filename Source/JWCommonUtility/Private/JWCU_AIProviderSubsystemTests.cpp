@@ -35,7 +35,7 @@ bool FJWCU_AIProviderSubsystemTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("Blueprint API is reflected"), First->FindFunction(TEXT("SaveKey")) && First->FindFunction(TEXT("GetApiKey")) && First->FindFunction(TEXT("SelectKey")));
 	TestNull(TEXT("Provider registry is not an editable property"), FindFProperty<FProperty>(UJWCU_AIProviderSettings::StaticClass(), TEXT("ProviderIds")));
 	const TArray<FString> Supported = First->GetSupportedProviders();
-	TestTrue(TEXT("Fixed supported providers are exposed to Blueprint"), Supported.Contains(TEXT("OpenAI")) && Supported.Contains(TEXT("Gemini")));
+	TestTrue(TEXT("Fixed supported providers are exposed to Blueprint"), Supported.Contains(TEXT("OpenAI")) && Supported.Contains(TEXT("Gemini")) && Supported.Contains(TEXT("ElevenLabs")));
 	FGuid RejectedId;
 	TestFalse(TEXT("Unregistered provider cannot save a key"), First->SaveKey(TEXT("CustomProvider"), {}, TEXT("unknown"), TEXT("fake"), {}, RejectedId));
 	TestFalse(TEXT("Unregistered provider cannot create runtime override"), First->SetRuntimeApiKey(TEXT("CustomProvider"), TEXT("fake")));

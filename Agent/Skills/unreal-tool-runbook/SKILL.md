@@ -7,6 +7,8 @@ description: JWCommonUtility 공용 도구와 스킬의 진입점. 어떤 도구
 
 # JWCommonUtility 도구 운영 순서
 
+> 부분 갱신 일자: 2026-09-28 — 음성 공급자 통합은 호스트로 이전하고 공용 AI 공급자 키 관리 스킬로 라우팅 변경.
+
 > 부분 갱신 일자: 2026-09-10 — 도구 라우팅·공통 순서·자주 틀리는 지점을 모은 진입점으로 신설.
 
 > 부분 갱신 일자: 2026-09-10 — owned_paths 소유 범위와 --include-external 을 반영.
@@ -34,6 +36,7 @@ python Plugins/JWCommonUtility/Tools/install_agent_support.py install --dry-run
 | Guard Clause 로그·전방 선언 검토 후보 찾기 | `check_code.py` | 후보는 확정이 아니다 |
 | 개별 시스템 개발 문서 작성·갱신 | `unreal-doc-writer` 스킬 | 근거는 코드·Config·에셋 |
 | 프로젝트 전체 구조 개요 작성 | `unreal-overview-writer` 스킬 | Mermaid 중심 |
+| AI 공급자 등록·키 저장/선택·BP 조회 연결 | [unreal-ai-provider-keys](../unreal-ai-provider-keys/SKILL.md) 스킬 | 암호화 저장·공용 UI·GIS 수명. 전사기 통합은 호스트 지침 사용 |
 | 도구·스킬 연결 설치·제거·상태 | `install_agent_support.py` | 링크와 상태 파일만 다룬다 |
 
 ## 공통 순서

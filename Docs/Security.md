@@ -2,6 +2,12 @@
 
 # OS 암호화와 개인 API 키 저장
 
+> 부분 갱신 일자: 2026-09-28 — 공용 AI 공급자 키 관리 스킬을 추가하고 호스트 전사 통합 절차와 분리.
+
+공급자 등록·키 관리 연결 작업은 [unreal-ai-provider-keys](../Agent/Skills/unreal-ai-provider-keys/SKILL.md)를 따른다. 이 문서는 저장·선택·이관 계약의 정본이며 전사기나 게임 어댑터 통합은 호스트가 소유한다.
+
+> 부분 갱신 일자: 2026-09-28 — 고정 공급자 카탈로그에 ElevenLabs 추가. 기존 암호화 목록·키 선택 UI 재사용.
+
 > 부분 갱신 일자: 2026-09-28 — 공급자 목록을 코드로 고정하고 Provider Registry 편집을 제거, 설정·GIS 검증 기준을 통일.
 
 > 부분 갱신 일자: 2026-09-28 — AI Provider Settings·관리 화면을 JWCU로 이관하고 GameInstance별 BP 서브시스템을 추가.
@@ -34,7 +40,7 @@ Blueprint의 **JWCU → Security → API Keys**에서 호출한다. GetApiKey의
 
 ## 프로젝트 설정과 Blueprint
 
-설정 위치는 **Project Settings → JWCommonUtility → AI Provider Settings**다. `UJWCU_AIProviderSettings`와 `JWCommonUtilityEditor`의 Details 커스터마이징이 공급자 카드·키 추가/수정 대화상자·사용 키 선택·삭제·목록 새로고침을 소유한다. 비밀값은 Config 속성이 아니다. 공급자 목록은 UJWCU_AIProviderSettings::GetProviderCatalog()의 OpenAI/Gemini로 고정한다. 사용자는 공급자 카드를 제거하거나 ID를 편집하지 않고 키만 관리한다. 공급자 추가·지원 종료는 플러그인 업데이트로 처리하며, bDeprecated=true인 공급자는 카드와 저장 키 조회·삭제만 유지하고 새 키 등록·선택·런타임 사용은 거절한다. 기존 Config의 ProviderIds는 더 이상 읽지 않는다. [Deprecated 2026-09-28] 편집 가능한 Provider Registry.
+설정 위치는 **Project Settings → JWCommonUtility → AI Provider Settings**다. `UJWCU_AIProviderSettings`와 `JWCommonUtilityEditor`의 Details 커스터마이징이 공급자 카드·키 추가/수정 대화상자·사용 키 선택·삭제·목록 새로고침을 소유한다. 비밀값은 Config 속성이 아니다. 공급자 목록은 UJWCU_AIProviderSettings::GetProviderCatalog()의 OpenAI/Gemini/ElevenLabs로 고정한다. 사용자는 공급자 카드를 제거하거나 ID를 편집하지 않고 키만 관리한다. 공급자 추가·지원 종료는 플러그인 업데이트로 처리하며, bDeprecated=true인 공급자는 카드와 저장 키 조회·삭제만 유지하고 새 키 등록·선택·런타임 사용은 거절한다. 기존 Config의 ProviderIds는 더 이상 읽지 않는다. [Deprecated 2026-09-28] 편집 가능한 Provider Registry.
 
 BP에서는 **Get Game Instance Subsystem → JWCU AI Provider Subsystem**을 얻는다. 공급자는 enum 대신 고정 목록의 문자열 ID를 받는다. GetSupportedProviders로 현재 지원 ID를 얻으며 미등록 ID는 설정·GIS 양쪽에서 거절한다. 저수준 APIKeyStore/Vault는 범용 저장소이므로 임의의 유효 식별자를 계속 지원한다.
 
