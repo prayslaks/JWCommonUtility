@@ -2,6 +2,8 @@
 
 # JWCommonUtility
 
+> 부분 갱신 일자: 2026-09-30 — JWNU가 공급자 키 관리·내부 암호화를 독립 소유하도록 이관. 기존 키 API·자동 이관 제거.
+
 > 부분 갱신 일자: 2026-09-29 — BP 그래프 포스트잇 메모와 사용 문서 추가.
 
 > 부분 갱신 일자: 2026-09-28 — AI Provider Settings·관리 화면을 JWCU로 이관하고 GameInstance별 BP 서브시스템을 추가.
@@ -14,7 +16,7 @@ Unreal Engine 5 범용 유틸리티 플러그인. Runtime Blueprint 함수 라�
 - **플랫폼**: Win64
 - **의존 플러그인**: ModelViewViewModel
 
-개인 API 키의 사용자 계정 암호화·저장은 [OS 암호화와 API 키 저장](Docs/Security.md)을 본다.
+범용 OS 암호화는 [Security.md](Docs/Security.md), 공급자 키 관리는 [JWNU AIProviders.md](../JWNetworkUtility/Docs/AIProviders.md)를 본다.
 
 BP 그래프의 독립적인 메모는 [Blueprint 포스트잇](Docs/StickyNotes.md)을 본다. 크기·색상·본문 편집, 접기·잠금과 기본 코멘트 변환을 제공한다.
 
@@ -22,8 +24,8 @@ BP 그래프의 독립적인 메모는 [Blueprint 포스트잇](Docs/StickyNotes
 
 | 경로 | 내용 |
 | --- | --- |
-| `Source/JWCommonUtility` | DateTime·String·Actor/Component·Math·Color·Widget·Debug·Collection·PlatformCrypto·APIKeyStore·APIKeyVault BFL, AIProviderSettings·AIProviderSubsystem, `JWCU_*` 디버그 매크로 |
-| `Source/JWCommonUtilityEditor` | AI Provider Settings의 공급자별 키 관리 화면, BP 그래프 포스트잇 |
+| `Source/JWCommonUtility` | DateTime·String·Actor/Component·Math·Color·Widget·Debug·Collection·PlatformCrypto BFL, `JWCU_*` 디버그 매크로 |
+| `Source/JWCommonUtilityEditor` | BP 그래프 포스트잇 |
 | `Tools/` | 주석·구조·코드 검사, 저작권 헤더 정리, 에이전트 스킬 설치기 (Python 3.10+, 표준 라이브러리만 사용) |
 | `Agent/Skills/` | Unreal 코드 정리·주석·문서 작성용 에이전트 스킬 원본 |
 | `Docs/` | 도구·스킬 사용 문서 |

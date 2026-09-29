@@ -29,7 +29,6 @@ public class JWCommonUtility : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
-				"DeveloperSettings",
 				"UMG",							// Widget Blueprint
 				"GameplayTags"					// FGameplayTag, FGameplayTagContainer
 			]
@@ -39,7 +38,6 @@ public class JWCommonUtility : ModuleRules
 			[
 				"Slate",
 				"SlateCore",
-				"Json",
 			]
 		);
 
