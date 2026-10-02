@@ -20,6 +20,7 @@
 #include "Misc/AutomationTest.h"
 #include "Misc/PackageName.h"
 #include "Misc/Paths.h"
+#include "ScopedTransaction.h"
 #include "StickyNotes/JWCU_StickyNoteActions.h"
 #include "StickyNotes/SJWCU_StickyNote.h"
 #include "SGraphPanel.h"
@@ -193,6 +194,89 @@ bool FJWCU_StickyNoteWidgetTest::RunTest(const FString& Parameters)
 		Editor->SetText(FText::FromString(TEXT("한글 입력\nSecond line")));
 		TestEqual(TEXT("Inline edit updates persistent body before focus loss"), Note->Body, FString(TEXT("한글 입력\nSecond line")));
 	}
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FJWCU_StickyNoteCommentMovementTest,
+	"JWCommonUtility.Editor.StickyNotes.CommentMovement", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FJWCU_StickyNoteCommentMovementTest::RunTest(const FString& Parameters)
+{
+	UBlueprint* Blueprint = JWCU_StickyNoteTests::CreateBlueprint(TEXT("/Temp/JWCUCommentMovement_") + FGuid::NewGuid().ToString(EGuidFormats::Digits));
+	UJWCU_StickyNote* Note = JWCU_StickyNoteTests::AddNote(Blueprint);
+	UJWCU_StickyNote* Neighbor = JWCU_StickyNoteTests::AddNote(Blueprint);
+	Note->NodePosX = 80;
+	Note->NodePosY = 100;
+	Neighbor->NodePosX = 140;
+	Neighbor->NodePosY = 160;
+	Neighbor->ResizeNode(FVector2f(220, 120));
+	UEdGraph* Graph = Note->GetGraph();
+	UEdGraphNode_Comment* Outer = NewObject<UEdGraphNode_Comment>(Graph, NAME_None, RF_Transactional);
+	Outer->CreateNewGuid();
+	Outer->NodeWidth = 1000;
+	Outer->NodeHeight = 800;
+	Outer->MoveMode = ECommentBoxMode::GroupMovement;
+	Graph->AddNode(Outer, false, false);
+	UEdGraphNode_Comment* Inner = NewObject<UEdGraphNode_Comment>(Graph, NAME_None, RF_Transactional);
+	Inner->CreateNewGuid();
+	Inner->NodePosX = 40;
+	Inner->NodePosY = 60;
+	Inner->NodeWidth = 700;
+	Inner->NodeHeight = 600;
+	Inner->MoveMode = ECommentBoxMode::GroupMovement;
+	Graph->AddNode(Inner, false, false);
+
+	TSharedRef<SGraphPanel> Panel = SNew(SGraphPanel).GraphObj(Graph);
+	// 실제 생성 경로의 위젯을 패널에 등록하고 엔진의 이동 종료 처리를 실행한다.
+	TSharedRef<SGraphNode> NoteWidget = Note->CreateVisualWidget().ToSharedRef();
+	TSharedRef<SGraphNode> NeighborWidget = Neighbor->CreateVisualWidget().ToSharedRef();
+	TSharedRef<SGraphNodeComment> OuterWidget = SNew(SGraphNodeComment, Outer);
+	TSharedRef<SGraphNodeComment> InnerWidget = SNew(SGraphNodeComment, Inner);
+	Panel->AddGraphNode(NoteWidget);
+	Panel->AddGraphNode(NeighborWidget);
+	Panel->AddGraphNode(OuterWidget);
+	Panel->AddGraphNode(InnerWidget);
+	Panel->SlatePrepass();
+	OuterWidget->GetShadowBrush(true);
+	InnerWidget->GetShadowBrush(true);
+	TestTrue(TEXT("Outer comment contains note and nested comment"), Outer->GetNodesUnderComment().Contains(Note) && Outer->GetNodesUnderComment().Contains(Inner));
+	TestTrue(TEXT("Inner comment contains note"), Inner->GetNodesUnderComment().Contains(Note));
+
+	SGraphNode::FNodeSet Filter;
+	{
+		const FScopedTransaction Transaction(FText::FromString(TEXT("Move comment containing sticky notes")));
+		StaticCastSharedRef<SGraphNode>(OuterWidget)->MoveTo(FVector2f(160, 80), Filter);
+		// 수정 전에는 여기서 StickyNote를 SGraphNodeComment로 잘못 처리하여 크래시가 발생한다.
+		OuterWidget->EndUserInteraction();
+	}
+	TestEqual(TEXT("Grouped note X"), Note->NodePosX, 240);
+	TestEqual(TEXT("Grouped note Y"), Note->NodePosY, 180);
+	TestEqual(TEXT("Nested comment moves once"), Inner->NodePosX, 200);
+	TestEqual(TEXT("Note does not collect overlapping neighbor"), Note->GetNodesUnderComment().Num(), 0);
+	GEditor->UndoTransaction();
+	TestEqual(TEXT("Undo grouped note movement"), Note->NodePosX, 80);
+	GEditor->RedoTransaction();
+	TestEqual(TEXT("Redo grouped note movement"), Note->NodePosX, 240);
+
+	Filter.Empty();
+	NoteWidget->MoveTo(FVector2f(256, 192), Filter);
+	NoteWidget->EndUserInteraction();
+	TestEqual(TEXT("Independent note movement preserves neighbor"), Neighbor->NodePosX, 300);
+	TestTrue(TEXT("Body remains selectable"), NoteWidget->CanBeSelected(FVector2f(100, 100)));
+	TestTrue(TEXT("Marquee uses entire note"), NoteWidget->GetDesiredSizeForMarquee2f().Equals(FVector2f(360, 240)));
+
+	Note->ToggleCollapsed();
+	NoteWidget->SlatePrepass();
+	Panel->SelectionManager.SelectSingleNode(Note);
+	Filter.Empty();
+	StaticCastSharedRef<SGraphNode>(OuterWidget)->MoveTo(FVector2f(192, 96), Filter);
+	TestEqual(TEXT("Selected folded note waits for selection movement"), Note->NodePosX, 256);
+	NoteWidget->MoveTo(FVector2f(288, 208), Filter);
+	OuterWidget->EndUserInteraction();
+	InnerWidget->EndUserInteraction();
+	TestEqual(TEXT("Selected folded note moves once"), Note->NodePosX, 288);
+	TestEqual(TEXT("Folded note retains expanded height"), Note->NodeHeight, 240);
+	TestEqual(TEXT("Folded note does not collect neighbors"), Note->GetNodesUnderComment().Num(), 0);
 	return true;
 }
 

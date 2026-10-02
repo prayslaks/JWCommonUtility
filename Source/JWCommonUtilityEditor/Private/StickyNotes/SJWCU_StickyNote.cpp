@@ -34,8 +34,8 @@ void SJWCU_StickyNote::Construct(const FArguments& Args, UJWCU_StickyNote* Note)
 		.SetBackgroundImageHovered(BackgroundBrush)
 		.SetBackgroundImageFocused(BackgroundBrush)
 		.SetBackgroundImageReadOnly(BackgroundBrush);
-	UpdateGraphNode();
-	CacheDesiredSize(1.f);
+	// 코멘트의 내부 선택 상태까지 초기화하되 가상 UpdateGraphNode는 메모 UI를 구성한다.
+	SGraphNodeComment::Construct(SGraphNodeComment::FArguments(), Note);
 }
 
 UJWCU_StickyNote* SJWCU_StickyNote::GetNote() const

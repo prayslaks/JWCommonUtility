@@ -2,6 +2,8 @@
 
 # Blueprint 포스트잇
 
+> 부분 갱신 일자: 2026-10-02 — 기본 코멘트와 함께 이동할 때의 위젯 캐스팅 크래시 수정과 이동 종료 회귀 테스트 추가.
+
 > 부분 갱신 일자: 2026-09-29 — 사용자 제공 SVG 네 개를 플러그인에 포함하고 에디터 스타일로 등록.
 
 > 부분 갱신 일자: 2026-09-29 — 잠금·접기 버튼을 정사각형 아이콘으로 압축하고 본문 입력창의 메모 배경색을 보존.
@@ -41,7 +43,9 @@ BP 그래프에 제목과 여러 줄 본문을 가진 직사각형 메모를 배
 | `bCollapsed`, `bLocked` | 접힘, 위치·크기 잠금. |
 | `NodeGuid` | 그래프의 노드 식별자. |
 
-기본 코멘트의 그룹 이동과 확대 시 말풍선 설정을 가져오지 않는다. 시각 위젯이 `SGraphNodeResizable`에서 직접 파생되어 코멘트의 영역 수집·그룹 이동 UI를 사용하지 않는다. Details 변경과 Undo는 그래프에 갱신을 알리고, 본문 편집은 포커스 단위 트랜잭션으로 묶는다.
+기본 코멘트의 그룹 이동과 확대 시 말풍선 설정을 가져오지 않는다. 시각 위젯은 `SGraphNodeComment`를 상속하고 기본 생성자로 내부 선택 상태를 초기화한다. 메모 UI·Tick·MoveTo는 기존 독립 동작을 사용하고, `IsNodeUnderComment`는 항상 false를 반환해 외부 코멘트의 강제 갱신에서도 주변 노드를 수집하지 않는다. 본문 영역 선택·전체 카드 마퀴 선택·그림자·오버레이는 `SGraphNode` 동작을 사용한다. 기본 코멘트 안의 메모는 코멘트의 그룹 이동에 함께 이동한다. Details 변경과 Undo는 그래프에 갱신을 알리고, 본문 편집은 포커스 단위 트랜잭션으로 묶는다.
+
+[Deprecated 2026-10-02] `SGraphNodeResizable` 직접 상속: UE 5.7의 `SGraphNodeComment::EndUserInteraction`은 겹치는 `UEdGraphNode_Comment` 데이터의 위젯을 `SGraphNodeComment`로 캐스팅하고 내부 선택 상태와 영역 수집을 갱신한다. 데이터만 코멘트이고 위젯 상속이 다르면 잘못된 메모리 접근으로 크래시가 발생한다. 향후 위젯 변경에서도 데이터와 위젯의 코멘트 상속 계약을 함께 유지한다.
 
 플러그인을 끄거나 제거하기 전에 **모든 관련 BP의 포스트잇을 기본 코멘트로 변환하고 저장**해야 한다. 포스트잇이 남은 에셋은 해당 플러그인 클래스에 의존한다. 변환은 메모별로 제공하며 프로젝트 전체 자동 변환은 없다.
 
@@ -66,11 +70,14 @@ UE 5.7 액션 DB는 `UK2Node::GetMenuActions`를 수집하고, 등록 클래스�
 
 Editor 타깃 빌드 후 Session Frontend에서 `JWCommonUtility.Editor.StickyNotes`를 실행한다.
 
-2026-09-29 검증: 호스트 UE 5.7.4의 `ProjectZKEditor Win64 Development` 빌드 성공. `-NullRHI` 명령행에서 아래 3종 모두 통과했다. 저장 검증은 아래 설명한 프로세스 한정 `bValidateOnSave=False` 옵션으로 호스트 Localization validator와 분리했다.
+2026-10-02 검증: 호스트 UE 5.7.4의 `ProjectZKEditor Win64 Development` 빌드 성공. `-NullRHI` 명령행에서 `CommentMovement`를 포함한 아래 4종 모두 통과했다. 보고서는 호스트의 `Saved/Automation/JWCUStickyNotesCommentMovementReport`, 로그는 `Saved/Logs/JWCUStickyNotesCommentMovementTests.log`에 저장했다. 실제 Windows 화면에서의 마우스 드래그는 별도 수동 확인 대상이다.
+
+2026-09-29 검증: 같은 호스트의 Editor 빌드와 기존 `Graph`·`SaveReload`·`Widget` 3종이 통과했다. 저장 검증은 아래 설명한 프로세스 한정 `bValidateOnSave=False` 옵션으로 호스트 Localization validator와 분리했다.
 
 - `Graph`: 검색 등록·컨텍스트 필터·커서 위치 생성, 비실행 핀, 다른 스키마 차단, 잠금 Undo/Redo, BP 간에 쓰이는 복사 포맷, 기본 코멘트 변환 Undo/Redo, BP 컴파일.
 - `SaveReload`: Saved 아래 임시 패키지에 저장하고 새로운 패키지 인스턴스로 읽어 한글·여러 줄·스타일·좌표·크기·접힘·잠금 보존 및 재컴파일 확인.
 - `Widget`: 실제 Slate 위젯의 접힘/펼침 크기, 이동 독립성·잠금·읽기 전용, 더블클릭 편집과 즉시 본문 저장.
+- `CommentMovement`: 실제 생성 위젯을 패널에 등록하고 기본 코멘트의 그룹 이동·`EndUserInteraction`을 실행한다. 중첩 코멘트 안의 메모 이동과 Undo/Redo, 주변 노드 수집 차단, 메모 독립 이동, 본문·마퀴 선택, 접힌 메모의 동시 선택 이동을 검증한다. 수정 전 크래시가 발생하던 이동 종료 경로를 포함한다.
 
 테스트 산출물은 `Saved/Automation/JWCUStickyNotes` 아래에 남는다. 테스트에서는 사용자 BP 에셋을 수정하지 않는다. 호스트의 Localization validator가 임시 테스트 에셋 저장에서 ensure를 내는 경우, 명령행 테스트 프로세스에만 `-ini:Editor:[/Script/DataValidation.DataValidationSettings]:bValidateOnSave=False`를 지정해 분리할 수 있다. 프로젝트 설정 파일은 변경하지 않는다.
 
