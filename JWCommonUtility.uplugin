@@ -1,39 +1,57 @@
 {
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
-    "PlatformAllowList": [ "Win64" ],
-	"FriendlyName": "JWCommonUtility",
-	"Description": "General-purpose Common Utility Plugin by JungWoo. DateTime, String, Actor/Component, Math, Color, Widget, Debug, and Collection utility functions for Blueprint.",
-	"Category": "Code Plugins > Utilities",
-	"CreatedBy": "prayslaks",
-	"CreatedByURL": "https://github.com/prayslaks",
-	"DocsURL": "",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
-	"IsBetaVersion": true,
-	"IsExperimentalVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "JWCommonUtility",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64"
-			]
-		},
-		{
-			"Name": "JWCommonUtilityEditor",
-			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit"
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "ModelViewViewModel",
-			"Enabled": true
-		}
-	]
+    "FileVersion": 3,
+    "Version": 1,
+    "VersionName": "1.0",
+    "PlatformAllowList": [
+        "Win64"
+    ],
+    "FriendlyName": "JWCommonUtility",
+    "Description": "General-purpose Common Utility Plugin by JungWoo. DateTime, String, Actor/Component, Math, Color, Widget, Debug, and Collection utility functions for Blueprint.",
+    "Category": "Code Plugins > Utilities",
+    "CreatedBy": "prayslaks",
+    "CreatedByURL": "https://github.com/prayslaks",
+    "DocsURL": "",
+    "MarketplaceURL": "",
+    "SupportURL": "",
+    "CanContainContent": true,
+    "IsBetaVersion": true,
+    "IsExperimentalVersion": false,
+    "Installed": false,
+    "Modules": [
+        {
+            "Name": "JWCommonUtility",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64"
+            ]
+        },
+        {
+            "Name": "JWCommonUtilityEditor",
+            "Type": "Editor",
+            "LoadingPhase": "PostEngineInit"
+        },
+        {
+            "Name": "JWCommonUtilityAudio",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64"
+            ]
+        },
+        {
+            "Name": "JWCommonUtilityAudioTest",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64"
+            ]
+        }
+    ],
+    "Plugins": [
+        {
+            "Name": "ModelViewViewModel",
+            "Enabled": true
+        }
+    ]
 }
